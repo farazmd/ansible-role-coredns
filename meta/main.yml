@@ -1,0 +1,14 @@
+galaxy_info:
+  author: Mohammad Faraz
+  description: A role to configure CoreDNS
+  company: tinkeringlab.io
+  license: Apache-2.0
+
+  min_ansible_version: 2.1
+  galaxy_tags:
+    - system
+    - linux
+    - DNS
+    - CoreDNS
+
+dependencies: []

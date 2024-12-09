@@ -1,0 +1,65 @@
+# tasks file for ansible-role-coredns
+- name: "Create CoreDNS directories"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ coredns_user }}"
+    group: "{{ coredns_user }}"
+    mode: 0755
+  with_items:
+    - "{{ coredns_config_file_path }}"
+    - "{{ coredns_config_file_path }}/keys"
+    - "{{ coredns_config_file_path }}/zones"
+
+- name: "Download CoreDNS binary version: {{ coredns_version }}"
+  ansible.builtin.get_url:
+    url: "{{ coredns_download_url }}"
+    dest: "/tmp/coredns_{{ coredns_version }}_{{ system_type[ansible_system] }}_{{ binary_arch[ansible_architecture] }}.tgz"
+    checksum: "sha256:{{ coredns_checksum_url }}"
+
+- name: "Extract CoreDNS binary"
+  ansible.builtin.unarchive:
+    src: "/tmp/coredns_{{ coredns_version }}_{{ system_type[ansible_system] }}_{{ binary_arch[ansible_architecture] }}.tgz"
+    dest: "/tmp/"
+    creates: "/tmp/coredns"
+
+- name: "Move CoreDNS binary"
+  ansible.builtin.copy:
+    src: "/tmp/coredns"
+    dest: "/usr/local/bin/coredns"
+    mode: 0750
+    owner: "{{ coredns_user }}"
+    group: "{{ coredns_user }}"
+
+- name: "Copy CoreDNS config file"
+  ansible.builtin.template:
+    src: Corefile.tpl
+    dest: "{{ coredns_config_file_path }}/Corefile"
+    mode: 0640
+
+- name: "Fetch Server IP"
+  ansible.builtin.shell: "{{ ansible_playbook_python }} -c 'import socket; print(socket.gethostbyname(socket.gethostname()))'"
+  register: ip_address_result
+
+- name: "Save captured IP address"
+  ansible.builtin.set_fact:
+    captured_ip_address: "{{ ip_address_result.stdout }}"
+
+- name: "Create CoreDNS zones"
+  ansible.builtin.include_tasks:
+    file: zone.yml
+  loop: "{{ coredns_zones }}"
+  loop_control:
+    label: "{{ zone.name }}"
+    loop_var: zone
+  when:
+    - coredns_zones is defined
+  
+- name: "Copy the CoreDNS systemd service"
+  ansible.builtin.template:
+    src: coredns.service.tpl
+    dest: /etc/systemd/system/coredns.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: "Start and enable CoreDNS"

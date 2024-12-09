@@ -1,0 +1,33 @@
+# defaults file for ansible-role-coredns
+coredns_user: "coredns"
+coredns_version: "1.12.0"
+binary_arch: {
+  "armv6l": "armhf", 
+  "armv7l": "armhf", 
+  "aarch64": "arm64", 
+  "x86_64": "amd64", 
+  "i386": "i386"
+}
+system_type: {
+  "Win32NT": "windows",
+  "Linux": "linux",
+  "Darwin": "darwin"
+}
+coredns_download_url: "https://github.com/coredns/coredns/releases/download/v{{ coredns_version }}/coredns_{{ coredns_version }}_{{ system_type[ansible_system] }}_{{ binary_arch[ansible_architecture] }}.tgz"
+coredns_checksum_url: "https://github.com/coredns/coredns/releases/download/v{{ coredns_version }}/coredns_{{ coredns_version }}_{{ system_type[ansible_system] }}_{{ binary_arch[ansible_architecture] }}.tgz.sha256"
+coredns_config_file_path: "/etc/coredns"
+
+coredns_forward_dns_servers:
+  - "1.1.1.1"
+  - "8.8.8.8"
+
+coredns_default_zone: "."
+coredns_common_plugins:
+  - name: "log"
+  - name: "errors"
+
+coredns_default_zone_plugins:
+  - name: "forward"
+    args: ". {{ coredns_forward_dns_servers | join(' ') }}"
+
+coredns_zones: []
