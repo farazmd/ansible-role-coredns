@@ -15,7 +15,7 @@
 
 - name: "Disable DNS resolver and start CoreDNS"
   ansible.builtin.systemd_service:
-  name: systemd-resolved
-  state: stopped
-  enabled: false
+    name: systemd-resolved
+    state: stopped
+    enabled: false
   notify: "Start and enable CoreDNS"
