@@ -36,6 +36,8 @@
     src: Corefile.tpl
     dest: "{{ coredns_config_file_path }}/Corefile"
     mode: 0640
+    owner: "{{ coredns_user }}"
+    group: "{{ coredns_user }}"
 
 - name: "Fetch Server IP"
   ansible.builtin.shell: "{{ ansible_playbook_python }} -c 'import socket; print(socket.gethostbyname(socket.gethostname()))'"
@@ -62,4 +64,4 @@
     owner: root
     group: root
     mode: 0644
-  notify: "Start and enable CoreDNS"
+  notify: "Disable DNS resolver and start CoreDNS"
