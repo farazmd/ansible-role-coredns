@@ -1,0 +1,9 @@
+# task file for ansible-role-coredns
+
+- name: "Create zonefile for {{ zone.name }}"
+  ansible.builtin.template:
+    src: Zonefile.tpl
+    dest: "{{ coredns_config_file_path }}/zones/{{ zone.name }}.db"
+    owner: "{{ coredns_user }}"
+    group: "{{ coredns_user }}"
+    mode: 0640
