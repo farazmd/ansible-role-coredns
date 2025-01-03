@@ -27,7 +27,8 @@ coredns_zones:
 ## Variables
 
 |       Variable              |               Description                 |   Default Value   |   Required?     |
-|     coredns_user            | User to run systemd service               |   coredns         |     No          |
+|-----------------------------|-------------------------------------------|-------------------|-----------------|
+|     coredns_user            |   User to run systemd service             |   coredns         |     No          |
 |     coredns_version         |   CoreDNS version to install              |   1.11.0          |     No          |
 |  coredns_config_file_path   |   Path to store configuration             |   /etc/coredns/   |     No          |
 | coredns_forward_dns_servers | A list of DNS servers to use as upstream  |   1.1.1.1,8.8.8.8 |     No          |
